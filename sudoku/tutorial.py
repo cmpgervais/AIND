@@ -26,6 +26,8 @@ square_units = [
     cross(rs, cs) for rs in ("ABC", "DEF", "GHI") for cs in ("123", "456", "789")
 ]
 unitlist = row_units + col_units + square_units
+units = {s: [u for u in unitlist if s in u] for s in boxes}
+peers = {s: set(sum(units[s], [])) - set(s) for s in boxes}
 
 print("\nBoxes:\n")
 print(boxes)
