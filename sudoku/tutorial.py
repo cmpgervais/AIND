@@ -1,5 +1,5 @@
 import os
-from typing import Sequence
+from typing import Dict, Sequence
 
 # Project for AIND, inspired by http://norvig.com/sudoku.html
 
@@ -41,7 +41,7 @@ example = (
 )
 
 
-def grid_values(grid: str = example):
+def grid_values(grid: str = example) -> Dict[str, str]:
     """
     Take in a string of values representing each box in the sudoku problem and
     assign each value to a box key in the dictionary
@@ -50,19 +50,20 @@ def grid_values(grid: str = example):
     return {box: val for box, val in zip(boxes, dots_removed)}
 
 
-def display(values):
+def display(grid_values: dict):
     """
     NOTE: Taken directly from the solution set
     Display the values as a 2-D grid.
     Input: The sudoku in dictionary form
     Output: None
     """
-    width = 1 + max(len(values[s]) for s in boxes)
+    width = 1 + max(len(grid_values[s]) for s in boxes)
     line = "+".join(["-" * (width * 3)] * 3)
     for r in rows:
         print(
             "".join(
-                values[r + c].center(width) + ("|" if c in "36" else "") for c in cols
+                grid_values[r + c].center(width) + ("|" if c in "36" else "")
+                for c in cols
             )
         )
         if r in "CF":
