@@ -41,12 +41,13 @@ example = (
 )
 
 
-def grid_values(input: str = example):
+def grid_values(grid: str = example):
     """
     Take in a string of values representing each box in the sudoku problem and
     assign each value to a box key in the dictionary
     """
-    return {box: val for box, val in zip(boxes, example)}
+    dots_removed = [i if i is not "." else cols for i in grid]
+    return {box: val for box, val in zip(boxes, dots_removed)}
 
 
 def display(values):
@@ -68,5 +69,6 @@ def display(values):
             print(line)
     return
 
-print('\nProblem Set:\n')
+
+print("\nProblem Set:\n")
 display(grid_values())
