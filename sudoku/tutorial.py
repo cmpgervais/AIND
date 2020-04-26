@@ -26,17 +26,12 @@ square_units = [
     cross(rs, cs) for rs in ("ABC", "DEF", "GHI") for cs in ("123", "456", "789")
 ]
 unitlist = row_units + col_units + square_units
-units = {s: [u for u in unitlist if s in u] for s in boxes}
-peers = {s: set(sum(units[s], [])) - set(s) for s in boxes}
 
-print("\nBoxes:\n")
-print(boxes)
-print("\nRow Units:\n")
-print(row_units)
-print("\nCol Units:\n")
-print(col_units)
-print("\nSquare Units:\n")
-print(square_units)
+# A mapping of box -> units
+units = {s: [u for u in unitlist if s in u] for s in boxes}
+
+# A mapping of box -> peers
+peers = {s: set(sum(units[s], [])) - set(s) for s in boxes}
 
 example = (
     "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3.."
@@ -73,5 +68,54 @@ def display(grid_values: dict):
     return
 
 
-print("\nProblem Set:\n")
-display(grid_values())
+def eliminate(grid_values: dict) -> Dict[str, str]:
+    solved = [box for box in grid_values.keys() if len(grid_values[box]) == 1]
+    for box in solved:
+        digit = grid_values[box]
+        for peer in peers[box]:
+            grid_values[peer] = grid_values[peer].replace(digit, "")
+
+    return grid_values
+
+
+def only_choice(grid_values: dict) -> Dict[str, str]:
+    for unit in unitlist:
+        for digit in "123456789":
+            dplaces = [box for box in unit if digit in grid_values[box]]
+            if len(dplaces) == 1:
+                grid_values[dplaces[0]] = digit
+
+    return grid_values
+
+
+def reduce_puzzle(values):
+    """
+    Iterate eliminate() and only_choice(). If at some point, there is a box with no available values, return False.
+    If the sudoku is solved, return the sudoku.
+    If after an iteration of both functions, the sudoku remains the same, return the sudoku.
+    Input: A sudoku in dictionary form.
+    Output: The resulting sudoku in dictionary form.
+    """
+    stalled = False
+    while not stalled:
+        # Check how many boxes have a determined value
+        solved_values_before = len(
+            [box for box in values.keys() if len(values[box]) == 1]
+        )
+        # Use the Eliminate Strategy
+        values = eliminate(values)
+        # Use the Only Choice Strategy
+        values = only_choice(values)
+        # Check how many boxes have a determined value, to compare
+        solved_values_after = len(
+            [box for box in values.keys() if len(values[box]) == 1]
+        )
+        # If no new values were added, stop the loop.
+        stalled = solved_values_before == solved_values_after
+        # Sanity check, return False if there is a box with zero available values:
+        if len([box for box in values.keys() if len(values[box]) == 0]):
+            return False
+    return values
+
+
+print(reduce_puzzle(grid_values()))
