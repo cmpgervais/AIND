@@ -35,3 +35,38 @@ print("\nCol Units:\n")
 print(col_units)
 print("\nSquare Units:\n")
 print(square_units)
+
+example = (
+    "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3.."
+)
+
+
+def grid_values(input: str = example):
+    """
+    Take in a string of values representing each box in the sudoku problem and
+    assign each value to a box key in the dictionary
+    """
+    return {box: val for box, val in zip(boxes, example)}
+
+
+def display(values):
+    """
+    NOTE: Taken directly from the solution set
+    Display the values as a 2-D grid.
+    Input: The sudoku in dictionary form
+    Output: None
+    """
+    width = 1 + max(len(values[s]) for s in boxes)
+    line = "+".join(["-" * (width * 3)] * 3)
+    for r in rows:
+        print(
+            "".join(
+                values[r + c].center(width) + ("|" if c in "36" else "") for c in cols
+            )
+        )
+        if r in "CF":
+            print(line)
+    return
+
+print('\nProblem Set:\n')
+display(grid_values())
